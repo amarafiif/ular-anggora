@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Register</title>
+	</head>
+	<body>
+		<h1>Register User</h1>
+		<form action="/register" method="post" enctype="multipart/form-data">
+			<label for="name">Name:</label>
+			<input type="text" id="name" name="name" required />
+			<br />
+			<label for="kelas">Class:</label>
+			<input type="text" id="kelas" name="kelas" required />
+			<br />
+			<label for="nim">NIM:</label>
+			<input type="text" id="nim" name="nim" required />
+			<br />
+			<label for="image">Image:</label>
+			<input type="file" id="image" name="image" required />
+			<br />
+			<input type="submit" value="Register" />
+		</form>
+	</body>
+</html>

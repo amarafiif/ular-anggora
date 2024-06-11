@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Attendance</title>
+	</head>
+	<body>
+		<h1>Attendance List</h1>
+		<table border="1">
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Class</th>
+				<th>NIM</th>
+				<th>Confidence</th>
+				<th>Timestamp</th>
+			</tr>
+			{% for entry in attendance %}
+			<tr>
+				<td>{{ entry.id }}</td>
+				<td>{{ entry.name }}</td>
+				<td>{{ entry.kelas }}</td>
+				<td>{{ entry.nim }}</td>
+				<td>{{ entry.confidence }}</td>
+				<td>{{ entry.timestamp }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</body>
+</html>
