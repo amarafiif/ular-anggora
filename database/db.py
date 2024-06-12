@@ -76,3 +76,51 @@ def update_user_image_path(user_id, image_path):
     )
     conn.commit()
     conn.close()
+
+
+def get_user_nim_by_id(user_id):
+    conn = mysql.connector.connect(
+        user="root", password="", host="localhost", database="db_pdm_presence"
+    )
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT nim FROM users WHERE id = %s", (user_id,))
+        row = cursor.fetchone()
+        conn.close()
+        return row[0] if row else "Unknown"
+
+
+def get_user_name_by_id(user_id):
+    conn = mysql.connector.connect(
+        user="root", password="", host="localhost", database="db_pdm_presence"
+    )
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM users WHERE id = %s", (user_id,))
+        row = cursor.fetchone()
+        conn.close()
+        return row[0] if row else "Unknown"
+
+
+def add_presence(nim, nama):
+    conn = mysql.connector.connect(
+        user="root", password="", host="localhost", database="db_pdm_presence"
+    )
+    cursor = conn.cursor()
+    query = "INSERT INTO presence (nim, nama, presensiPada) VALUES (%s, %s, NOW())"
+    cursor.execute(query, (nim, nama))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def get_user_info_by_id(user_id):
+    conn = mysql.connector.connect(
+        user="root", password="", host="localhost", database="db_pdm_presence"
+    )
+    cursor = conn.cursor()
+    cursor.execute("SELECT nim, name FROM users WHERE id = %s", (user_id,))
+    row = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return row
