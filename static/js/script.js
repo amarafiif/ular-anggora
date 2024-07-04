@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	const captureButton = document.getElementById("capture");
 	const registerForm = document.getElementById("register-form");
 
-	// Mendapatkan akses ke kamera saat halaman dimuat
 	navigator.mediaDevices
 		.getUserMedia({ video: true })
 		.then(function (stream) {
@@ -30,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		const imageData = canvas.toDataURL("image/jpeg");
 
 		// Menyimpan data URL base64 ke dalam input tersembunyi
-		// Buat input hidden untuk menyimpan image base64
 		let imageInput = document.getElementById("image");
 		if (!imageInput) {
 			imageInput = document.createElement("input");
@@ -42,7 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		imageInput.value = imageData;
 	});
 
-	// Menangani submit form registrasi
 	registerForm.addEventListener("submit", function (event) {
 		event.preventDefault();
 		const formData = new FormData(registerForm);
@@ -61,13 +58,23 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 	});
 
-	// Menangani klik tombol "Train Model"
 	document.getElementById("train-model").addEventListener("click", function () {
+		const name = document.getElementById("name").value;
+		const nim = document.getElementById("nim").value;
+		const image = document.getElementById("image").value;
+
+		const formData = new FormData();
+		formData.append("name", name);
+		formData.append("nim", nim);
+		formData.append("image", image);
+
 		fetch("/train", {
 			method: "POST",
+			body: formData,
 		})
 			.then((response) => response.json())
 			.then((data) => {
+				console.log("Response from server:", data);
 				alert(data.message);
 			})
 			.catch((error) => {

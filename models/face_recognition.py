@@ -11,6 +11,7 @@ def detect_faces(image):
     cascade_path = "cascades/haarcascade_frontalface_default.xml"
     if not os.path.exists(cascade_path):
         raise ValueError(f"Cascade file not found: {cascade_path}")
+
     face_cascade = cv2.CascadeClassifier(cascade_path)
     faces = face_cascade.detectMultiScale(
         image,
@@ -31,8 +32,8 @@ def get_images_and_labels(path):
         pil_image = Image.open(image_path).convert("L")  # Convert it to grayscale
         image_np = np.array(pil_image, "uint8")
         user_id = int(
-            os.path.split(image_path)[-1].split("_")[0]
-        )  # Assuming the filename starts with user_id
+            os.path.split(image_path)[-1].split(".")[1]
+        )  # Assuming the filename starts with 'User.{id}.'
         faces = detect_faces(image_np)  # Detect faces using detect_faces function
 
         for x, y, w, h in faces:
@@ -43,7 +44,7 @@ def get_images_and_labels(path):
 
 
 def train_model():
-    path = "static/images"
+    path = "dataset"
     face_samples, ids = get_images_and_labels(path)
     recognizer.train(face_samples, np.array(ids))
     if not os.path.exists("trainer"):

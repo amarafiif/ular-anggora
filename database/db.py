@@ -124,3 +124,18 @@ def get_user_info_by_id(user_id):
     cursor.close()
     conn.close()
     return row
+
+
+def get_user_image_path(user_id):
+    conn = mysql.connector.connect(
+        user="root", password="", host="localhost", database="db_pdm_presence"
+    )
+    cursor = conn.cursor()
+
+    query = "SELECT image_path FROM users WHERE id = %s"
+    cursor.execute(query, (user_id,))
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    return result[0] if result else None

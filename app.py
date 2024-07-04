@@ -14,16 +14,26 @@ from database.db import (
     get_user_nim_by_id,
     add_presence,
     get_user_info_by_id,
+    get_user_image_path,
 )
 from datetime import datetime
 import base64
 import os
 import cv2
+from PIL import Image
+import numpy as np
+from flask_cors import CORS
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
 
 app = Flask(__name__)
+CORS(app)
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
-recognizer.read("trainer/trainer.yml")
+if os.path.exists("trainer/trainer.yml"):
+    recognizer.read("trainer/trainer.yml")
 attendance = []
 
 
@@ -102,15 +112,9 @@ def register():
 
         print(f"Image saved to: {image_path}")
 
-        save_image_with_label(image_path, user_id)
-
         # Update path gambar di database
         update_user_image_path(user_id, image_path)
         print("Image path updated in database")
-
-        # Lakukan training model dengan foto baru
-        train_model()
-        print("Model trained successfully")
 
         return jsonify({"message": "User registered successfully"})
     except Exception as e:
@@ -121,8 +125,48 @@ def register():
 @app.route("/train", methods=["POST"])
 def train():
     try:
-        train_model()
-        return jsonify({"message": "Training completed"})
+
+        logging.debug("Request received to train endpoint")
+        name = request.form["name"]
+        logging.debug(f"Name received: {name}")
+        user_id = get_user_id_by_name(name)
+        if not user_id:
+            return jsonify({"error": "User not found"}), 404
+
+        # Ambil path gambar profil dari database atau langsung dari folder
+        user_image_path = get_user_image_path(
+            user_id
+        )  # Panggil fungsi get_user_image_path
+        if not user_image_path:
+            return jsonify({"error": "User image not found"}), 404
+
+        # Baca gambar profil dari path yang telah disimpan
+        profile_image = cv2.imread(user_image_path)
+        gray_profile = cv2.cvtColor(profile_image, cv2.COLOR_BGR2GRAY)
+
+        # Inisialisasi kamera dan ambil 25 gambar dari kamera
+        camera = cv2.VideoCapture(0)
+        count = 0
+        while count < 25:
+            success, frame = camera.read()
+            if not success:
+                break
+
+            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            faces = detect_faces(gray_frame)
+            for x, y, w, h in faces:
+                count += 1
+                face = gray_frame[y : y + h, x : x + w]
+                # Simpan gambar ke dataset
+                dataset_image_path = f"dataset/User.{user_id}.{count}.jpg"
+                cv2.imwrite(dataset_image_path, face)
+                if count >= 25:
+                    break
+
+        camera.release()
+        train_model()  # Panggil fungsi untuk melatih model setelah semua gambar tersimpan
+
+        return jsonify({"message": "Training completed with 25 images per user"})
     except Exception as e:
         print(f"Error during training: {e}")
         return jsonify({"error": str(e)}), 500

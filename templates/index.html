@@ -17,18 +17,14 @@
 			<label for="nim">NIM:</label>
 			<input type="text" id="nim" name="nim" required />
 			<br />
-			<!-- Tambahkan tag video untuk menampilkan output kamera -->
 			<video id="video" width="640" height="480" autoplay></video>
 			<br />
-			<!-- Tambahkan tombol untuk mengambil foto -->
 			<button id="capture">Capture</button>
 			<br />
 			<br />
 			<input type="submit" value="Register" />
 		</form>
 		<button id="train-model">Train Model</button>
-		<!-- <img src="{{ url_for('video_feed') }}" width="640" height="480" /> -->
-
 		<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 	</body>
 </html>
